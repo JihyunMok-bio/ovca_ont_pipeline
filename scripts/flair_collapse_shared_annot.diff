@@ -1,0 +1,38 @@
+--- flair/flair_collapse.py (FLAIR 3.0.0b1)
++++ flair_collapse_shared_annot.py
+@@ -117,6 +117,11 @@
+                                             help='''[OPTIONAL] fusion detection only - bed file containing locations of fusion breakpoints on the synthetic genome''')
+     parser.add_argument('--allow_paralogs', default=False, action='store_true',
+                                             help='specify if want to allow reads to be assigned to multiple paralogs with equivalent alignment')
++    parser.add_argument('--annot_shared', default='',
++            help='''[added] prefix of an existing alignment of the reads to the annotated transcripts:
++            PREFIX.annotated_transcripts.alignment.counts and PREFIX.annotated_transcripts.isoform.read.map.txt
++            are used instead of running the alignment again (that step depends only on --reads, --gtf and
++            the alignment options, not on --query, so it is the same for every chromosome)''')
+     parser.add_argument('--predictCDS', default=False, action='store_true',
+                         help='specify if you want to predict the CDS of the final isoforms. '
+                              'Will be output in the final bed file but not the gtf file. '
+@@ -257,8 +262,13 @@
+             count_cmd += ['--allow_paralogs']
+         count_cmd = tuple(count_cmd)
+ 
+-        logging.info('Aligning to and counting read support for annotated transcripts')
+-        pipettor.run([mm2_cmd, count_cmd])
++        if args.annot_shared:
++            logging.info('[added] Reusing shared alignment to annotated transcripts: ' + args.annot_shared)
++            for suffix in ('annotated_transcripts.alignment.counts', 'annotated_transcripts.isoform.read.map.txt'):
++                os.symlink(os.path.abspath(args.annot_shared + '.' + suffix), args.output + suffix)
++        else:
++            logging.info('Aligning to and counting read support for annotated transcripts')
++            pipettor.run([mm2_cmd, count_cmd])
+ 
+         logging.info('Setting up unassigned reads for flair-collapse novel isoform detection')
+         # match counts
+@@ -429,4 +439,7 @@
+     return [args.output+'isoforms.bed', args.output+'isoforms.fa']
+ 
+ if __name__ == "__main__":
++    from flair import set_unix_path
++    set_unix_path()
++    logging.basicConfig(level=logging.INFO, format='%(message)s')
+     collapse()

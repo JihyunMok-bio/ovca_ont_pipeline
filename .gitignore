@@ -1,0 +1,7 @@
+*.fastq
+*.fastq.gz
+*.bam
+*.bai
+*.fa
+*.log
+__pycache__/

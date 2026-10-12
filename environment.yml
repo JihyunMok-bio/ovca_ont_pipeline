@@ -1,0 +1,24 @@
+# Software used for this Data Descriptor (versions as run).
+# FLAIR align/correct used FLAIR v2.0.0 (minimap2 2.24) in a separate environment;
+# SQANTI3 v5.2.2 uses its own environment (SQANTI3.conda_env.yml in the SQANTI3 release);
+# Dorado 0.9.6 is the standalone ONT binary.
+# The shell scripts also use pigz (2.4), GNU coreutils (8.30; `split --filter`) and GNU awk (5.0.1) from the system.
+name: ovca-ont-longread
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  # FLAIR collapse / quantify
+  - python=3.12
+  - minimap2=2.30
+  - samtools=1.22.1
+  - bedtools=2.31.1
+  - bioawk=1.0
+  - pip
+  - pip:
+      - flair-brookslab==3.0.0b1
+      - mappy==2.30
+      - pysam==0.23.3
+      - pipettor==1.2.1
+  # coding subset
+  - pandas=3.0.1
